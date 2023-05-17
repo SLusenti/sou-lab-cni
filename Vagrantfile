@@ -26,7 +26,7 @@ Vagrant.configure("2") do |config|
       v.name = "soube1"
     end
     soube1.vm.provision "ansible" do |ansible|
-      ansible.playbook = "./haproxy.yml"
+      ansible.playbook = "./haproxy.yaml"
       ansible.become = true
     end
   end
