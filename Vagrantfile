@@ -25,9 +25,9 @@ Vagrant.configure("2") do |config|
       v.cpus = 1
       v.name = "soube1"
     end
-    # soube1.vm.provision "ansible" do |ansible|
-    #   ansible.playbook = "./apps.yml"
-    #   ansible.become = true
-    # end
+    soube1.vm.provision "ansible" do |ansible|
+      ansible.playbook = "./haproxy.yml"
+      ansible.become = true
+    end
   end
 end
