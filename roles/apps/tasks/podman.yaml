@@ -1,0 +1,7 @@
+
+- name: Install podman
+  ansible.builtin.yum:
+    name:
+      - podman
+      - python2-cryptography
+    state: present

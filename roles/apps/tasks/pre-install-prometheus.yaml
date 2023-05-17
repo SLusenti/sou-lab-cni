@@ -1,0 +1,73 @@
+---
+- name: Create data dir 
+  ansible.builtin.file:
+    path: /containers_vols 
+    state: directory 
+    owner: nobody
+    group: nobody
+    mode: '0755'
+
+- name: Create Prometheus data dir 
+  ansible.builtin.file:
+    path: /containers_vols/prometheus/data 
+    state: directory
+    owner: nobody
+    group: nobody
+    mode: '0777'
+
+- name: Create Prometheus config dir 
+  ansible.builtin.file:
+    path: /containers_vols/prometheus/config 
+    state: directory
+    owner: nobody
+    group: nobody
+    mode: '0755'
+
+- name: Create Prometheus ssl dir 
+  ansible.builtin.file:
+    path: /containers_vols/prometheus/ssl 
+    owner: nobody
+    group: nobody
+    state: directory
+    mode: '0755'
+
+- name: generate prometheus private key
+  openssl_privatekey:
+    path: /containers_vols/prometheus/ssl/prometheus.key
+    owner: nobody
+    group: nobody
+    mode: 0644
+    size: 2048 
+
+- name: generate prometheus csr
+  openssl_csr:
+    path: /containers_vols/prometheus/ssl/prometheus.csr
+    privatekey_path: /containers_vols/prometheus/ssl/prometheus.key
+    owner: nobody
+    group: nobody
+
+- name: generate prometheus certificate
+  openssl_certificate:
+    owner: nobody
+    group: nobody
+    mode: 0644
+    provider: selfsigned
+    path: /containers_vols/prometheus/ssl/prometheus.crt
+    privatekey_path: /containers_vols/prometheus/ssl/prometheus.key
+    csr_path: /containers_vols/prometheus/ssl/prometheus.csr
+
+- name: Template prometheus.yaml
+  ansible.builtin.template:
+    src: prometheus.yml
+    dest: /containers_vols/prometheus/config/prometheus.yml
+    mode: '0644'
+    owner: nobody
+    group: nobody
+
+- name: Template web-config.yaml
+  ansible.builtin.template:
+    src: web-config.yaml
+    dest: /containers_vols/prometheus/config/web-config.yml
+    owner: nobody
+    group: nobody
+    mode: '0644'

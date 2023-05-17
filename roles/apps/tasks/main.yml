@@ -1,0 +1,25 @@
+---
+- name: install packages
+  import_tasks: podman.yaml
+  tags:
+  - always
+
+- name: preparing prometheus environment
+  import_tasks: pre-install-prometheus.yaml
+  tags:
+  - prometheus
+
+- name: preparing grafana environment
+  import_tasks: pre-install-grafana.yaml
+  tags:
+  - grafana
+
+- name: installing prometheus
+  import_tasks: install-prometheus.yaml
+  tags:
+  - prometheus
+
+- name: installing grafana
+  import_tasks: install-grafana.yaml
+  tags:
+  - grafana

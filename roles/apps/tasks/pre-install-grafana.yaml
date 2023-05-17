@@ -1,0 +1,55 @@
+---
+- name: Create data dir 
+  ansible.builtin.file:
+    path: /containers_vols 
+    state: directory 
+    mode: '0755'
+
+- name: create grafana user
+  ansible.builtin.user:
+    create_home: false
+    group: root
+    name: grafana
+    uid: 472
+
+- name: Create grafana config dir 
+  ansible.builtin.file:
+    path: /containers_vols/grafana/config 
+    state: directory
+    owner: grafana
+    mode: '0755'
+
+- name: Create grafana ssl dir 
+  ansible.builtin.file:
+    path: /containers_vols/grafana/ssl 
+    state: directory
+    owner: grafana
+    mode: '0755'
+
+- name: generate grafana private key
+  openssl_privatekey:
+    mode: 0644
+    owner: grafana
+    path: /containers_vols/grafana/ssl/grafana.key
+    size: 2048 
+
+- name: generate grafana csr
+  openssl_csr:
+    owner: grafana
+    path: /containers_vols/grafana/ssl/grafana.csr
+    privatekey_path: /containers_vols/grafana/ssl/grafana.key
+
+- name: generate grafana certificate
+  openssl_certificate:
+    provider: selfsigned
+    owner: grafana
+    path: /containers_vols/grafana/ssl/grafana.crt
+    privatekey_path: /containers_vols/grafana/ssl/grafana.key
+    csr_path: /containers_vols/grafana/ssl/grafana.csr
+
+- name: Template grafana.ini
+  ansible.builtin.template:
+    src: grafana.ini
+    owner: grafana
+    dest: /containers_vols/grafana/config/grafana.ini
+    mode: '0644'

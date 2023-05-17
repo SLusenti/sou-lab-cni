@@ -1,0 +1,4 @@
+---
+crtfile:
+  - /containers_vols/haproxy/ssl/haproxy.crt
+  - /containers_vols/haproxy/ssl/haproxy.key

@@ -1,0 +1,64 @@
+---
+- name: Create data dir 
+  ansible.builtin.file:
+    path: /containers_vols 
+    state: directory 
+    mode: '0755'
+
+# - name: create haproxy user
+#   ansible.builtin.user:
+#     create_home: false
+#     group: root
+#     name: grafana
+#     uid: 472
+
+- name: Create haproxy config dir 
+  ansible.builtin.file:
+    path: /containers_vols/haproxy/config 
+    state: directory
+    # owner: grafana
+    # mode: '0755'
+
+- name: Create haproxy ssl dir 
+  ansible.builtin.file:
+    path: /containers_vols/haproxy/ssl 
+    state: directory
+    # owner: grafana
+    # mode: '0755'
+
+- name: generate haproxy private key
+  openssl_privatekey:
+    mode: 0644
+    # owner: grafana
+    path: /containers_vols/haproxy/ssl/haproxy.key
+    size: 2048 
+
+- name: generate haproxy csr
+  openssl_csr:
+    # owner: grafana
+    path: /containers_vols/haproxy/ssl/haproxy.csr
+    privatekey_path: /containers_vols/haproxy/ssl/haproxy.key
+
+- name: generate haproxy certificate
+  openssl_certificate:
+    provider: selfsigned
+    # owner: grafana
+    path: /containers_vols/haproxy/ssl/haproxy.crt
+    privatekey_path: /containers_vols/haproxy/ssl/haproxy.key
+    csr_path: /containers_vols/haproxy/ssl/haproxy.csr
+
+- name: Template haproxy.cfg
+  ansible.builtin.template:
+    src: haproxy.cfg
+    # owner: grafana
+    dest: /containers_vols/haproxy/config/haproxy.cfg
+    mode: '0644'
+
+- name: read cert files
+  command: awk 1 {{ crtfile | join(' ') }}
+  register: crt_content
+  
+- name: create pem file
+  copy:
+    dest: /containers_vols/haproxy/ssl/haproxy.pem
+    content: "{{ crt_content.stdout }}"

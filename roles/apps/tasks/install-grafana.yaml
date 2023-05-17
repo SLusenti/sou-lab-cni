@@ -1,0 +1,15 @@
+- name: Create grafana Container 
+  containers.podman.podman_container:
+    name: grafana
+    image: grafana/grafana-oss:{{ grafana_tag }} 
+    volume:
+    - /containers_vols/grafana/config/grafana.ini:/etc/grafana/grafana.ini:z
+    - /containers_vols/grafana/ssl:/etc/ssl/certs:z
+    expose:
+    - "3000"
+    ports:
+    - "3000:3000"
+    env:
+      GF_SERVER_PROTOCOL: https
+      GF_SERVER_CERT_FILE: /etc/ssl/certs/grafana.crt
+      GF_SERVER_CERT_KEY: /etc/ssl/certs/grafana.key

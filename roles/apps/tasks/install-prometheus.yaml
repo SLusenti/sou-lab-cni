@@ -1,0 +1,17 @@
+---
+- name: Create Prometheus Container 
+  containers.podman.podman_container:
+    name: prometheus
+    image: prom/prometheus:{{ prometheus_tag }} 
+    volume:
+    - /containers_vols/prometheus/config/prometheus.yml:/etc/prometheus/custom-prometheus.yml:z
+    - /containers_vols/prometheus/ssl:/etc/ssl/certs:z
+    - /containers_vols/prometheus/config/web-config.yml:/etc/prometheus/web-config.yml:z
+    - /containers_vols/prometheus/data:/prometheus:z
+    state: started
+    detach: true
+    expose:
+    - "9090"
+    ports:
+    - "9090:9090"
+    command: --config.file=/etc/prometheus/custom-prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles --web.config.file=/etc/prometheus/web-config.yml

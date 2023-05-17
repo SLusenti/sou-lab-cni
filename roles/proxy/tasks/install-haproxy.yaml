@@ -1,0 +1,11 @@
+- name: Create haproxy Container 
+  containers.podman.podman_container:
+    name: haproxy
+    image: haproxy
+    volume:
+    - /containers_vols/haproxy/config/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:z
+    - /containers_vols/haproxy/ssl/haproxy.pem:/usr/local/etc/haproxy/certs/foo.pem:z
+    expose:
+    - "8443"
+    ports:
+    - "8443:8443"

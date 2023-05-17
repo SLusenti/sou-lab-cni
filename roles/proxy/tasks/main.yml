@@ -1,0 +1,15 @@
+---
+- name: install packages
+  import_tasks: podman.yaml
+  tags:
+  - always
+
+- name: preparing haproxy environment
+  import_tasks: pre-install-haproxy.yaml
+  tags:
+  - haproxy
+
+- name: installing haproxy
+  import_tasks: install-haproxy.yaml
+  tags:
+  - haproxy
